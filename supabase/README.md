@@ -31,6 +31,7 @@ in filename order — the order encodes the foreign-key and policy dependencies.
 | 21 | `20261020002100_matching_queue_functions.sql` | The queue operations of the matching worker |
 | 22 | `20261020002200_push_outbox_functions.sql` | The queue operations of the push dispatcher |
 | 23 | `20261020002400_sub_city_columns_and_functions.sql` | The `sub_city_code` columns and the sub-city based create/edit functions |
+| 24 | `20261023000100_sub_city_verified_kebeles.sql` | Verified Dire Dawa urban kebeles, `is_active` and the source columns |
 
 ### Identity
 
@@ -147,6 +148,80 @@ the cycle disappears.
 The helpers are safe to expose: they take no identity from their
 arguments — they always answer "may *this* caller see this job?", and the
 caller comes from the JWT.
+
+## Verified service areas (`sub_cities`)
+
+The location pickers are driven by `public.sub_cities`. A row is offered in
+the forms when `is_active` is true; inactive rows stay in the table because
+`job_requests.sub_city_code` and `professionals.sub_city_code` reference
+their codes.
+
+### Source and method
+
+| | |
+|---|---|
+| Dataset | OCHA Common Operational Dataset — Ethiopia administrative boundaries (COD-AB), CC BY-IGO |
+| Published by | <https://openadmindata.org/et/> (`/api/v1/countries/et.json`) |
+| Administrative unit | Woreda level of the **"Dire Dawa urban"** zone (`ET1501`) — the nine urban kebeles of the city |
+| Retrieved | 2026-10-23 |
+| Confidence | High for names and p-codes; medium for the coordinates (woreda centroids, not surveyed kebele centres) |
+
+Cross-check: the Ethiopian Atlas entry for *Dire Dawa urban* lists the same
+nine names. No Amharic or Oromo spellings are published by the source, so
+`name_am` / `name_om` stay `NULL` rather than being invented.
+
+### Imported records
+
+| `code` (app) | Official code | Name | Lat, Lon |
+|---|---|---|---|
+| `sabian` | ET150103 | Sabian | 9.627, 41.835 |
+| `malka_jabti` | ET150104 | Malka Jabti /M.Jebdu | 9.629, 41.795 |
+| `legehare` | ET150105 | Legehare | 9.605, 41.877 |
+| `addis_ketema_dd` | ET150109 | Addis Ketema (DD) | 9.589, 41.860 |
+| `gende_kore` | ET150110 | Gende Kore | 9.600, 41.855 |
+| `dechatu` | ET150111 | Dechatu | 9.601, 41.883 |
+| `hafat_issa` | ET150112 | Hafat Issa | 9.605, 41.869 |
+| `kazira` | ET150113 | Kazira | 9.636, 41.855 |
+| `police_maret` | ET150114 | Police Maret | 9.639, 41.868 |
+
+Administrative level: urban kebele (COD-AB woreda of the Dire Dawa urban
+zone). All nine records are flagged `is_active = true`.
+
+### The nine earlier rows
+
+The nine rows seeded by `20261020000250_sub_cities.sql` (`abdi_boru`,
+`bir_chiro`, `bole`, `central`, `geda`, `kele`, `melikasa`,
+`ras_serkalegn`, `yirga_cheta`) could not be matched to any authoritative
+list of Dire Dawa kebeles: the names do not appear in the COD-AB, the
+Ethiopian Atlas, the agricultural datahub boundary or the ArcGIS service.
+They are **kept, not deleted or renamed**, and flagged `is_active = false`
+so the forms stop offering them. Requests and professional profiles that
+still point at those codes remain valid and keep rendering.
+
+### Running the import
+
+```powershell
+node apps/web/src/scripts/import-dire-dawa-kebeles.js --dry-run  # report only
+node apps/web/src/scripts/import-dire-dawa-kebeles.js            # insert missing
+```
+
+The script fetches the source, checks that the nine expected p-codes are
+still listed, rejects coordinates outside Dire Dawa, and **inserts only**.
+An existing code or name is reported as reused and never modified.
+
+### Limitations of the sources
+
+* **Ethiopian Agricultural Datahub** (`data.moa.gov.et/dataset/diredawa-city-administration-boundary`)
+  publishes a single city-boundary polygon (KML/GeoJSON/WMS). It carries no
+  kebele names or codes and was used only to confirm the city extent.
+* **ArcGIS `Ethiopia_AdminBoundaries`** has a *Kebeles (Level 4)* layer, but
+  for Dire Dawa it contains the city polygon plus 32 rural kebeles under
+  Gorgora. It lists **no urban kebele names**.
+* **openadmindata.org** stops at woreda level. For Dire Dawa those woredas
+  are the urban kebeles, which is why it is the usable source here; it does
+  not provide sub-kebele neighbourhoods.
+* The coordinate of each row is the woreda centroid. Do not treat it as a
+  precise kebele centre; it is only used for the distance in the matching.
 
 ## Permissions
 

@@ -42,3 +42,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# apps/web is tracked as a normal directory in this monorepo
+/apps/web/.next/
+/apps/web/node_modules/
+/apps/web/.freebuff/
+/apps/web/.git.bak/
