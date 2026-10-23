@@ -1,27 +1,29 @@
 {
-  "name": "fixlink-tmp",
+  "name": "fixlink-ethiopia",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "npm run dev --workspace @fixlink/web",
+    "build": "npm run build --workspace @fixlink/web",
+    "start": "npm run start --workspace @fixlink/web",
+    "lint": "npm run lint --workspace @fixlink/web",
+    "typecheck": "npm run typecheck --workspace @fixlink/web",
+    "test": "npm run test --workspace @fixlink/web"
+  },
+  "engines": {
+    "node": ">=20.9.0"
   },
   "dependencies": {
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "next": "15.5.28"
-  },
-  "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
-    "eslint": "^9",
-    "eslint-config-next": "15.5.28",
-    "@eslint/eslintrc": "^3"
+    "@reduxjs/toolkit": "^2.13.0",
+    "decimal.js-light": "^2.5.1",
+    "es-toolkit": "^1.52.0",
+    "eventemitter3": "^5.0.4",
+    "react-is": "^19.3.1",
+    "react-redux": "^9.3.0",
+    "tiny-invariant": "^1.3.3",
+    "victory-vendor": "^37.3.6"
   }
 }
