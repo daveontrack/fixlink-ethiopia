@@ -128,7 +128,11 @@ async function enrich(
 }
 
 export async function listBookings(
-  filters: TableFilters & { customerId?: string; professionalId?: string } = {},
+  filters: TableFilters & {
+    customerId?: string;
+    professionalId?: string;
+    scheduledAfter?: string;
+  } = {},
 ): Promise<Paginated<Booking>> {
   const supabase = (await createClerkClient()) as any;
   const page = filters.page ?? 1;
@@ -143,6 +147,16 @@ export async function listBookings(
   if (filters.customerId) query = query.eq("customer_id", filters.customerId);
   if (filters.professionalId) {
     query = query.eq("professional_id", filters.professionalId);
+  }
+  if (filters.scheduledAfter) {
+    query = query.gt("scheduled_at", filters.scheduledAfter);
+  }
+  if (filters.status) {
+    const databaseStatus =
+      filters.status === "pending" || filters.status === "confirmed"
+        ? "booked"
+        : filters.status;
+    query = query.eq("status", databaseStatus);
   }
 
   const { data, count, error } = await query;

@@ -23,22 +23,26 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border px-6 py-14 text-center",
+        "relative flex flex-col items-center justify-center gap-4 overflow-hidden rounded-2xl border border-dashed border-[var(--role-accent)]/25 bg-card/60 px-6 py-14 text-center",
         className,
       )}
     >
-      <div className="rounded-full bg-muted p-3 text-muted-foreground">
+      <span
+        className="pointer-events-none absolute inset-x-10 top-0 h-28 bg-[radial-gradient(ellipse_at_top,var(--role-soft),transparent_70%)] opacity-70"
+        aria-hidden
+      />
+      <div className="role-soft-panel relative grid size-14 place-items-center rounded-2xl shadow-inner ring-1 ring-inset ring-[var(--role-accent)]/10">
         <Icon className="size-6" aria-hidden />
       </div>
-      <div className="space-y-1">
-        <p className="font-medium text-foreground">{title}</p>
+      <div className="relative space-y-1.5">
+        <p className="text-base font-semibold text-foreground">{title}</p>
         {description ? (
-          <p className="mx-auto max-w-md text-sm text-muted-foreground">
+          <p className="mx-auto max-w-md text-sm leading-relaxed text-muted-foreground">
             {description}
           </p>
         ) : null}
       </div>
-      {action}
+      {action ? <div className="relative">{action}</div> : null}
     </div>
   );
 }

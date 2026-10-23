@@ -7,6 +7,33 @@ import { requireProfessional } from "@/lib/auth/guards";
 import { createClerkClient } from "@/lib/supabase/clerk";
 import { createProfessionalService, setProfessionalServiceActive } from "@/services/professional-services";
 
+const languagePreferenceSchema = z.enum(["en", "am", "om"]);
+
+export async function updateProfessionalLanguageAction(language: string) {
+  const user = await requireProfessional();
+  const parsed = languagePreferenceSchema.safeParse(language);
+
+  if (!parsed.success) {
+    return { ok: false as const, error: "Choose a supported language." };
+  }
+
+  const supabase = await createClerkClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .update({ preferred_language: parsed.data })
+    .eq("clerk_user_id", user.clerkUserId)
+    .select("id")
+    .maybeSingle();
+
+  if (error || !data) {
+    console.error("[professional] language preference failed:", error?.message);
+    return { ok: false as const, error: "We could not save your language preference." };
+  }
+
+  revalidatePath("/professional/settings");
+  return { ok: true as const };
+}
+
 export const professionalServiceSchema = z.object({
   categoryId: z.string().uuid("Choose a category"),
   title: z.string().min(3, "Enter a service title").max(120),

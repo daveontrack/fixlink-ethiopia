@@ -47,7 +47,7 @@ export function NotificationList({
           );
 
           return notification.href ? (
-            <Link key={notification.id} href={notification.href} className="block">
+            <Link key={notification.id} href={notification.href} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--ring)]">
               {body}
             </Link>
           ) : (

@@ -1,13 +1,13 @@
 import "server-only";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClerkClient } from "@/lib/supabase/clerk";
 import type { AppNotification, NotificationType } from "@/types";
 
 export async function listNotifications(
   userId: string,
   limit = 30,
 ): Promise<AppNotification[]> {
-  const supabase = await createClient();
+  const supabase = await createClerkClient();
   const { data, error } = await supabase
     .from("notifications")
     .select("*")
@@ -33,7 +33,7 @@ export async function listNotifications(
 }
 
 export async function markNotificationRead(id: string, userId: string) {
-  const supabase = await createClient();
+  const supabase = await createClerkClient();
   const { error } = await supabase
     .from("notifications")
     .update({ is_read: true })
@@ -49,7 +49,7 @@ export async function markNotificationRead(id: string, userId: string) {
 }
 
 export async function markAllNotificationsRead(userId: string) {
-  const supabase = await createClient();
+  const supabase = await createClerkClient();
   const { error } = await supabase
     .from("notifications")
     .update({ is_read: true })
@@ -71,7 +71,7 @@ export async function createNotification(input: {
   body: string;
   href?: string | null;
 }) {
-  const supabase = await createClient();
+  const supabase = await createClerkClient();
   const { data, error } = await supabase
     .from("notifications")
     .insert({
@@ -94,7 +94,7 @@ export async function createNotification(input: {
 }
 
 export async function countUnreadNotifications(userId: string): Promise<number> {
-  const supabase = await createClient();
+  const supabase = await createClerkClient();
   const { count, error } = await supabase
     .from("notifications")
     .select("id", { count: "exact", head: true })

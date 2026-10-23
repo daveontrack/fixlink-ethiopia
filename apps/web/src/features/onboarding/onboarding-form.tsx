@@ -2,17 +2,16 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BriefcaseBusiness, UserRound } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 import { SubmitButton } from "@/components/forms/submit-button";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { completeOnboarding } from "@/features/onboarding/actions";
 import { cn } from "@/lib/utils";
-import type { UserRole } from "@/types";
 
 const schema = z.object({
   role: z.enum(["customer", "professional"]),
@@ -42,13 +41,24 @@ const OPTIONS: Array<{
   },
 ];
 
+const SIGNUP_ROLE_KEY = "fixlink-signup-role";
+
 export function OnboardingForm() {
   const form = useForm<Values>({
     resolver: zodResolver(schema),
-    defaultValues: { role: "customer" },
+    defaultValues: { role: undefined },
   });
 
-  const selected = form.watch("role");
+  const selected = useWatch({ control: form.control, name: "role" });
+
+  useEffect(() => {
+    const pendingRole = window.sessionStorage.getItem(SIGNUP_ROLE_KEY);
+    window.sessionStorage.removeItem(SIGNUP_ROLE_KEY);
+
+    if (pendingRole === "customer" || pendingRole === "professional") {
+      form.setValue("role", pendingRole, { shouldValidate: true });
+    }
+  }, [form]);
 
   async function onSubmit(values: Values) {
     const result = await completeOnboarding({ role: values.role });
@@ -64,6 +74,7 @@ export function OnboardingForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="grid gap-4 sm:grid-cols-2"
       >
+        <input type="hidden" {...form.register("role")} />
         {OPTIONS.map((option) => {
           const Icon = option.icon;
           const active = selected === option.role;

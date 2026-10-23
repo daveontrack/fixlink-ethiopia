@@ -44,8 +44,8 @@ export default async function NewRequestPage({
         description="Tell professionals what you need. You will receive quotations you can compare and accept."
       />
 
-      <Card>
-        <CardContent className="p-6">
+      <Card className="mx-auto max-w-3xl rounded-2xl shadow-sm">
+        <CardContent className="p-5 sm:p-8">
           <RequestForm
             categories={options}
             subCities={subCityOptions}

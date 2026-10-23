@@ -12,44 +12,42 @@ export type Database = {
       profiles: {
         Row: {
           id: string;
+          auth_user_id: string | null;
           clerk_user_id: string | null;
-          role: "customer" | "professional" | "admin";
+          email: string | null;
           full_name: string;
-          email: string;
+          role: Database["public"]["Enums"]["user_role"];
           phone: string | null;
           avatar_url: string | null;
-          city: string | null;
-          sub_city: string | null;
-          address: string | null;
-          status: "active" | "suspended" | "pending";
+          preferred_language: Database["public"]["Enums"]["language_code"];
+          account_status: Database["public"]["Enums"]["account_status"];
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
+          auth_user_id?: string | null;
           clerk_user_id?: string | null;
-          role?: "customer" | "professional" | "admin";
-          full_name: string;
-          email: string;
+          email?: string | null;
+          full_name?: string;
+          role?: Database["public"]["Enums"]["user_role"];
           phone?: string | null;
           avatar_url?: string | null;
-          city?: string | null;
-          sub_city?: string | null;
-          address?: string | null;
-          status?: "active" | "suspended" | "pending";
+          preferred_language?: Database["public"]["Enums"]["language_code"];
+          account_status?: Database["public"]["Enums"]["account_status"];
           created_at?: string;
           updated_at?: string;
         };
         Update: {
-          role?: "customer" | "professional" | "admin";
+          auth_user_id?: string | null;
+          clerk_user_id?: string | null;
+          email?: string | null;
           full_name?: string;
-          email?: string;
+          role?: Database["public"]["Enums"]["user_role"];
           phone?: string | null;
           avatar_url?: string | null;
-          city?: string | null;
-          sub_city?: string | null;
-          address?: string | null;
-          status?: "active" | "suspended" | "pending";
+          preferred_language?: Database["public"]["Enums"]["language_code"];
+          account_status?: Database["public"]["Enums"]["account_status"];
           updated_at?: string;
         };
         Relationships: [];
@@ -116,120 +114,258 @@ export type Database = {
         };
         Relationships: [];
       };
-      quotations: {
+      professionals: {
         Row: {
           id: string;
-          request_id: string;
-          customer_id: string;
-          professional_id: string;
-          status:
-            | "draft"
-            | "sent"
-            | "accepted"
-            | "rejected"
-            | "expired"
-            | "withdrawn";
-          subtotal: number;
-          transport_fee: number;
-          total: number;
-          notes: string | null;
-          valid_until: string;
+          profile_id: string;
+          bio: string | null;
+          years_of_experience: number;
+          verification_status: Database["public"]["Enums"]["verification_status"];
+          accepts_requests: boolean;
+          service_radius_km: number;
+          sub_city_code: string | null;
+          base_area_name: string | null;
+          base_location: Json | null;
+          average_rating: number | null;
+          total_reviews: number;
+          completed_jobs: number;
+          quotation_response_rate: number | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          request_id: string;
-          customer_id: string;
-          professional_id: string;
-          status?:
-            | "draft"
-            | "sent"
-            | "accepted"
-            | "rejected"
-            | "expired"
-            | "withdrawn";
-          subtotal: number;
-          transport_fee?: number;
-          total: number;
-          notes?: string | null;
-          valid_until: string;
+          profile_id: string;
+          bio?: string | null;
+          years_of_experience?: number;
+          verification_status?: Database["public"]["Enums"]["verification_status"];
+          accepts_requests?: boolean;
+          service_radius_km?: number;
+          sub_city_code?: string | null;
+          base_area_name?: string | null;
+          base_location?: Json | null;
+          average_rating?: number | null;
+          total_reviews?: number;
+          completed_jobs?: number;
+          quotation_response_rate?: number | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
-          status?:
-            | "draft"
-            | "sent"
-            | "accepted"
-            | "rejected"
-            | "expired"
-            | "withdrawn";
-          notes?: string | null;
-          valid_until?: string;
+          bio?: string | null;
+          years_of_experience?: number;
+          verification_status?: Database["public"]["Enums"]["verification_status"];
+          accepts_requests?: boolean;
+          service_radius_km?: number;
+          sub_city_code?: string | null;
+          base_area_name?: string | null;
+          base_location?: Json | null;
+          average_rating?: number | null;
+          total_reviews?: number;
+          completed_jobs?: number;
+          quotation_response_rate?: number | null;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "professionals_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      job_requests: {
+        Row: {
+          id: string;
+          customer_id: string;
+          category_id: string;
+          title: string;
+          description: string;
+          priority: Database["public"]["Enums"]["job_priority"];
+          status: Database["public"]["Enums"]["job_status"];
+          sub_city_code: string;
+          area_name: string;
+          location: Json;
+          match_score: number | null;
+          expires_at: string | null;
+          idempotency_key: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          customer_id: string;
+          category_id: string;
+          title: string;
+          description: string;
+          priority?: Database["public"]["Enums"]["job_priority"];
+          status?: Database["public"]["Enums"]["job_status"];
+          sub_city_code: string;
+          area_name: string;
+          location: Json;
+          match_score?: number | null;
+          expires_at?: string | null;
+          idempotency_key?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          title?: string;
+          description?: string;
+          priority?: Database["public"]["Enums"]["job_priority"];
+          status?: Database["public"]["Enums"]["job_status"];
+          sub_city_code?: string;
+          area_name?: string;
+          location?: Json;
+          match_score?: number | null;
+          expires_at?: string | null;
+          idempotency_key?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "job_requests_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "job_requests_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "service_categories";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      quotations: {
+        Row: {
+          id: string;
+          job_id: string;
+          professional_id: string;
+          labor_cost_etb: number;
+          materials_cost_etb: number;
+          notes: string;
+          proposed_start_at: string | null;
+          valid_until: string;
+          status: Database["public"]["Enums"]["quotation_status"];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          job_id: string;
+          professional_id: string;
+          labor_cost_etb: number;
+          materials_cost_etb?: number;
+          notes: string;
+          proposed_start_at?: string | null;
+          valid_until: string;
+          status?: Database["public"]["Enums"]["quotation_status"];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          labor_cost_etb?: number;
+          materials_cost_etb?: number;
+          notes?: string;
+          proposed_start_at?: string | null;
+          valid_until?: string;
+          status?: Database["public"]["Enums"]["quotation_status"];
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "quotations_job_id_fkey";
+            columns: ["job_id"];
+            isOneToOne: false;
+            referencedRelation: "job_requests";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "quotations_professional_id_fkey";
+            columns: ["professional_id"];
+            isOneToOne: false;
+            referencedRelation: "professionals";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       bookings: {
         Row: {
           id: string;
-          request_id: string | null;
-          quotation_id: string | null;
+          job_id: string;
+          quotation_id: string;
           customer_id: string;
           professional_id: string;
-          status:
-            | "pending"
-            | "confirmed"
-            | "in_progress"
-            | "completed"
-            | "cancelled";
-          payment_status: "unpaid" | "partial" | "paid" | "refunded";
-          scheduled_date: string;
-          scheduled_time: string;
-          duration_hours: number;
-          total_price: number;
-          address: string;
-          notes: string | null;
+          scheduled_at: string;
+          status: Database["public"]["Enums"]["booking_status"];
+          accepted_at: string;
+          started_at: string | null;
+          completed_at: string | null;
+          cancelled_at: string | null;
+          cancellation_reason: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          request_id?: string | null;
-          quotation_id?: string | null;
+          job_id: string;
+          quotation_id: string;
           customer_id: string;
           professional_id: string;
-          status?:
-            | "pending"
-            | "confirmed"
-            | "in_progress"
-            | "completed"
-            | "cancelled";
-          payment_status?: "unpaid" | "partial" | "paid" | "refunded";
-          scheduled_date: string;
-          scheduled_time: string;
-          duration_hours?: number;
-          total_price: number;
-          address: string;
-          notes?: string | null;
+          scheduled_at: string;
+          status?: Database["public"]["Enums"]["booking_status"];
+          accepted_at?: string;
+          started_at?: string | null;
+          completed_at?: string | null;
+          cancelled_at?: string | null;
+          cancellation_reason?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
-          status?:
-            | "pending"
-            | "confirmed"
-            | "in_progress"
-            | "completed"
-            | "cancelled";
-          payment_status?: "unpaid" | "partial" | "paid" | "refunded";
-          scheduled_date?: string;
-          scheduled_time?: string;
-          notes?: string | null;
+          scheduled_at?: string;
+          status?: Database["public"]["Enums"]["booking_status"];
+          started_at?: string | null;
+          completed_at?: string | null;
+          cancelled_at?: string | null;
+          cancellation_reason?: string | null;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "bookings_job_id_fkey";
+            columns: ["job_id"];
+            isOneToOne: false;
+            referencedRelation: "job_requests";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "bookings_quotation_id_fkey";
+            columns: ["quotation_id"];
+            isOneToOne: false;
+            referencedRelation: "quotations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "bookings_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "bookings_professional_id_fkey";
+            columns: ["professional_id"];
+            isOneToOne: false;
+            referencedRelation: "professionals";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       messages: {
         Row: {
@@ -404,8 +540,60 @@ export type Database = {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: Record<string, never>;
+    Functions: {
+      ensure_profile: {
+        Args: {
+          p_full_name?: string | null;
+          p_phone?: string | null;
+          p_avatar_url?: string | null;
+          p_email?: string | null;
+        };
+        Returns: Database["public"]["Tables"]["profiles"]["Row"];
+      };
+      start_as_professional: {
+        Args: { p_years_of_experience?: number; p_bio?: string | null };
+        Returns: Database["public"]["Tables"]["professionals"]["Row"];
+      };
+      set_account_status: {
+        Args: {
+          p_profile_id: string;
+          p_status: Database["public"]["Enums"]["account_status"];
+          p_reason?: string | null;
+        };
+        Returns: Database["public"]["Tables"]["profiles"]["Row"];
+      };
+    };
+    Enums: {
+      user_role: "customer" | "professional" | "admin";
+      account_status: "active" | "suspended" | "closed";
+      verification_status: "pending" | "approved" | "rejected";
+      language_code: "en" | "am" | "om";
+      job_status:
+        | "open"
+        | "matching"
+        | "quoted"
+        | "booked"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
+        | "disputed"
+        | "expired";
+      booking_status: "booked" | "in_progress" | "completed" | "cancelled" | "disputed";
+      quotation_status: "submitted" | "selected" | "declined" | "expired";
+      job_priority: "normal" | "urgent";
+      match_response_status: "pending" | "viewed" | "quoted" | "declined" | "timeout";
+      report_reason:
+        | "no_show"
+        | "poor_quality"
+        | "unsafe"
+        | "unprofessional"
+        | "fraud"
+        | "payment_dispute"
+        | "other";
+      report_status: "open" | "investigating" | "resolved" | "dismissed";
+      verification_document_type: "id_card" | "business_license" | "trade_certificate" | "other";
+      device_platform: "android" | "ios" | "web";
+    };
     CompositeTypes: Record<string, never>;
   };
 };

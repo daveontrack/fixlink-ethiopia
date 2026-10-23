@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClerkClient } from "@/lib/supabase/clerk";
 import type { ProfessionalProfile } from "@/types";
 
 export interface AvailabilitySlot {
@@ -15,7 +15,7 @@ export interface AvailabilitySlot {
 export async function listAvailability(
   professionalId: string,
 ): Promise<AvailabilitySlot[]> {
-  const supabase = (await createClient()) as any;
+  const supabase = (await createClerkClient()) as any;
 
   const { data, error } = await supabase
     .from("availability_slots")
@@ -49,7 +49,7 @@ export async function saveAvailability(
     isActive: boolean;
   }>,
 ): Promise<boolean> {
-  const supabase = (await createClient()) as any;
+  const supabase = (await createClerkClient()) as any;
 
   // Reset the schedule then (re)insert the active slots. Simple and correct.
   const { error: deleteError } = await supabase

@@ -1,4 +1,11 @@
-import { CalendarCheck, ClipboardList, MessageSquare, Plus, Star } from "lucide-react";
+import {
+  CalendarCheck,
+  ClipboardList,
+  MessageSquare,
+  Plus,
+  Search,
+  Star,
+} from "lucide-react";
 import Link from "next/link";
 
 import { EmptyState } from "@/components/shared/empty-state";
@@ -44,16 +51,24 @@ export default async function CustomerDashboardPage() {
         title="Dashboard"
         description="Track your requests, quotations and upcoming jobs."
         actions={
-          <Button asChild>
-            <Link href="/customer/requests/new">
-              <Plus className="size-4" aria-hidden />
-              New request
-            </Link>
-          </Button>
+          <>
+            <Button asChild variant="outline">
+              <Link href="/customer/services">
+                <Search className="size-4" aria-hidden />
+                Browse services
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link href="/customer/requests/new">
+                <Plus className="size-4" aria-hidden />
+                New request
+              </Link>
+            </Button>
+          </>
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Open requests"
           value={openRequests}
@@ -73,7 +88,7 @@ export default async function CustomerDashboardPage() {
           hint="All time"
         />
         <StatCard
-          label="Quoted value"
+          label="Recent booking value"
           value={`ETB ${spent.toLocaleString("en-ET")}`}
           icon={MessageSquare}
           hint="Across recent bookings"
@@ -81,9 +96,11 @@ export default async function CustomerDashboardPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
+        <Card className="rounded-2xl shadow-sm">
           <CardHeader className="flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-base">Recent requests</CardTitle>
+            <CardTitle className="text-base tracking-tight">
+              Recent requests
+            </CardTitle>
             <Button asChild variant="ghost" size="sm">
               <Link href="/customer/requests">View all</Link>
             </Button>
@@ -107,9 +124,11 @@ export default async function CustomerDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-2xl shadow-sm">
           <CardHeader className="flex-row items-center justify-between space-y-0">
-            <CardTitle className="text-base">Upcoming bookings</CardTitle>
+            <CardTitle className="text-base tracking-tight">
+              Upcoming bookings
+            </CardTitle>
             <Button asChild variant="ghost" size="sm">
               <Link href="/customer/bookings">View all</Link>
             </Button>

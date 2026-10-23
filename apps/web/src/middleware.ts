@@ -13,26 +13,14 @@ const isPublicRoute = createRouteMatcher([
   "/api/health",
 ]);
 
-const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
-
 export default clerkMiddleware(async (auth, req) => {
-  const { userId, sessionClaims } = await auth();
+  const { userId } = await auth();
 
   // "/" is NOT public: guests are sent to the sign-in page.
   if (!isPublicRoute(req) && !userId) {
     const signInUrl = new URL("/sign-in", req.url);
     signInUrl.searchParams.set("redirect_url", req.nextUrl.pathname);
     return NextResponse.redirect(signInUrl);
-  }
-
-  if (isAdminRoute(req)) {
-    const role = (sessionClaims?.public_metadata as { role?: string } | undefined)
-      ?.role;
-    if (role !== "admin") {
-      const signInUrl = new URL("/sign-in", req.url);
-      signInUrl.searchParams.set("redirectUrl", req.url);
-      return NextResponse.redirect(signInUrl);
-    }
   }
 
   // Supabase reads the Clerk token from the request headers on the server

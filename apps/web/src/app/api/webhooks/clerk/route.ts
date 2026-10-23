@@ -12,7 +12,6 @@ interface ClerkWebhookEvent {
     last_name?: string | null;
     image_url?: string | null;
     phone_numbers?: Array<{ phone_number: string }>;
-    public_metadata?: Record<string, unknown>;
   };
 }
 
@@ -35,8 +34,10 @@ export async function POST(request: NextRequest) {
       data.email_addresses?.[0]?.email_address ||
       "User";
 
+    // Clerk metadata is not authorization data. Sync only identity fields
+    // into an existing profile; onboarding securely creates missing profiles.
     await syncProfile({
-      authUserId: data.id,
+      clerkUserId: data.id,
       email: data.email_addresses?.[0]?.email_address ?? "",
       fullName,
       phone: data.phone_numbers?.[0]?.phone_number ?? null,

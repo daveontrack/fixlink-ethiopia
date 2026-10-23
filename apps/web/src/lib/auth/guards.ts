@@ -1,5 +1,6 @@
 import "server-only";
 
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 import { ROLE_HOME } from "@/lib/constants";
@@ -10,8 +11,11 @@ import type { CurrentUser, UserRole } from "@/types";
  * Require a signed-in user. Redirects to sign-in when the visitor is guest.
  */
 export async function requireUser(): Promise<CurrentUser> {
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
+
   const user = await getCurrentUser();
-  if (!user) redirect("/sign-in");
+  if (!user) redirect("/onboarding");
   return user;
 }
 

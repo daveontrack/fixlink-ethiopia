@@ -19,6 +19,7 @@ export interface Profile {
   phone: string | null;
   email: string;
   avatarUrl: string | null;
+  preferredLanguage: "en" | "am" | "om";
   city: string | null;
   subCity: string | null;
   address: string | null;

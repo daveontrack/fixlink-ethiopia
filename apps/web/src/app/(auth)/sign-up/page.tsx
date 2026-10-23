@@ -5,13 +5,21 @@ import { BriefcaseBusiness, UserRound } from "lucide-react";
 import { SignUp } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { POST_AUTH_REDIRECT } from "@/lib/auth/redirects";
 
 type Role = "customer" | "professional";
+const SIGNUP_ROLE_KEY = "fixlink-signup-role";
 
 export default function SignUpPage() {
   const [role, setRole] = useState<Role | null>(null);
+
+  function selectRole(nextRole: Role) {
+    // This only prefills the post-auth onboarding choice. The server validates
+    // and writes the selected role to profiles before granting dashboard access.
+    window.sessionStorage.setItem(SIGNUP_ROLE_KEY, nextRole);
+    setRole(nextRole);
+  }
 
   if (!role) {
     return (
@@ -27,17 +35,17 @@ export default function SignUpPage() {
             <Card
               role="button"
               tabIndex={0}
-              onClick={() => setRole("customer")}
+              onClick={() => selectRole("customer")}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  setRole("customer");
+                  selectRole("customer");
                 }
               }}
-              className="cursor-pointer transition-colors hover:border-primary/40"
+              className="hover-lift cursor-pointer rounded-2xl shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
             >
               <CardHeader>
-                <span className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary">
+                <span className="grid size-10 place-items-center rounded-xl bg-teal-50 text-teal-700 ring-1 ring-inset ring-teal-100">
                   <UserRound className="size-5" aria-hidden />
                 </span>
                 <CardTitle className="text-lg">Customer</CardTitle>
@@ -47,17 +55,17 @@ export default function SignUpPage() {
             <Card
               role="button"
               tabIndex={0}
-              onClick={() => setRole("professional")}
+              onClick={() => selectRole("professional")}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  setRole("professional");
+                  selectRole("professional");
                 }
               }}
-              className="cursor-pointer transition-colors hover:border-primary/40"
+              className="hover-lift cursor-pointer rounded-2xl shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
             >
               <CardHeader>
-                <span className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary">
+                <span className="grid size-10 place-items-center rounded-xl bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-100">
                   <BriefcaseBusiness className="size-5" aria-hidden />
                 </span>
                 <CardTitle className="text-lg">Professional</CardTitle>
@@ -77,11 +85,8 @@ export default function SignUpPage() {
           ← Back
         </Button>
         <SignUp
-          fallbackRedirectUrl={
-            role === "professional"
-              ? "/professional/dashboard"
-              : "/customer/dashboard"
-          }
+          fallbackRedirectUrl={POST_AUTH_REDIRECT}
+          forceRedirectUrl={POST_AUTH_REDIRECT}
         />
       </div>
     </div>

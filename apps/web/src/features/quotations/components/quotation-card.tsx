@@ -21,11 +21,14 @@ interface QuotationCardProps {
 
 export function QuotationCard({ quotation, actions }: QuotationCardProps) {
   return (
-    <Card>
-      <CardHeader className="flex-row items-center justify-between space-y-0">
+    <Card className="overflow-hidden rounded-2xl border-border/80 pt-0">
+      <span className="role-gradient block h-1 w-full" aria-hidden />
+      <CardHeader className="flex-row items-center justify-between space-y-0 pt-5">
         <div>
-          <CardTitle className="text-base">{quotation.professionalName}</CardTitle>
-          <p className="text-xs text-muted-foreground">
+          <CardTitle className="text-base tracking-tight">
+            {quotation.professionalName}
+          </CardTitle>
+          <p className="mt-1 text-xs text-muted-foreground">
             Valid until {formatDate(quotation.validUntil)}
           </p>
         </div>
@@ -57,7 +60,7 @@ export function QuotationCard({ quotation, actions }: QuotationCardProps) {
           </TableBody>
         </Table>
 
-        <div className="space-y-1 border-t border-border pt-3 text-sm">
+        <div className="space-y-1.5 rounded-xl bg-muted/40 p-4 text-sm">
           <div className="flex justify-between text-muted-foreground">
             <span>Subtotal</span>
             <span>{formatCurrency(quotation.subtotal)}</span>
@@ -66,9 +69,11 @@ export function QuotationCard({ quotation, actions }: QuotationCardProps) {
             <span>Transport</span>
             <span>{formatCurrency(quotation.transportFee)}</span>
           </div>
-          <div className="flex justify-between font-semibold">
+          <div className="flex justify-between border-t border-border/70 pt-2 font-semibold text-foreground">
             <span>Total</span>
-            <span>{formatCurrency(quotation.total)}</span>
+            <span className="text-base tracking-tight">
+              {formatCurrency(quotation.total)}
+            </span>
           </div>
         </div>
 

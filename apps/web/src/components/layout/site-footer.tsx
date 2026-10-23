@@ -32,38 +32,45 @@ const FOOTER_LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-border bg-muted/30">
-      <div className="container mx-auto grid gap-10 px-4 py-12 md:grid-cols-4">
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 font-semibold">
-            <span className="grid size-9 place-items-center rounded-lg bg-primary text-primary-foreground">
+    <footer className="relative overflow-hidden bg-slate-950 text-slate-300">
+      <span
+        className="pointer-events-none absolute -top-24 right-0 size-80 rounded-full bg-teal-500/10 blur-3xl"
+        aria-hidden
+      />
+      <div className="container relative mx-auto grid gap-10 px-4 py-14 md:grid-cols-4">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2.5 font-semibold text-white">
+            <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-teal-600 to-emerald-500 shadow-lg shadow-teal-900/40">
               <Wrench className="size-5" aria-hidden />
             </span>
             {APP_NAME}
           </div>
-          <p className="text-sm text-muted-foreground">{APP_TAGLINE}</p>
-          <ul className="space-y-2 text-sm text-muted-foreground">
+          <p className="text-sm leading-relaxed text-slate-400">{APP_TAGLINE}</p>
+          <ul className="space-y-2 text-sm text-slate-400">
             <li className="flex items-center gap-2">
-              <MapPin className="size-4" aria-hidden /> Diredawa, Ethiopia
+              <MapPin className="size-4 text-teal-400" aria-hidden /> Dire Dawa,
+              Ethiopia
             </li>
             <li className="flex items-center gap-2">
-              <Phone className="size-4" aria-hidden /> +251 91 000 0000
+              <Phone className="size-4 text-teal-400" aria-hidden /> +251 91 000
+              0000
             </li>
             <li className="flex items-center gap-2">
-              <Mail className="size-4" aria-hidden /> hello@fixlink.et
+              <Mail className="size-4 text-teal-400" aria-hidden />{" "}
+              hello@fixlink.et
             </li>
           </ul>
         </div>
 
         {FOOTER_LINKS.map((column) => (
           <div key={column.title}>
-            <h3 className="text-sm font-semibold">{column.title}</h3>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+            <h3 className="text-sm font-semibold text-white">{column.title}</h3>
+            <ul className="mt-4 space-y-2.5 text-sm text-slate-400">
               {column.links.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="transition-colors hover:text-foreground"
+                    className="transition-colors hover:text-teal-300"
                   >
                     {link.label}
                   </Link>
@@ -74,10 +81,11 @@ export function SiteFooter() {
         ))}
       </div>
 
-      <div className="border-t border-border py-6">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-2 px-4 text-xs text-muted-foreground sm:flex-row">
+      <div className="relative border-t border-white/10 py-6">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-2 px-4 text-xs text-slate-500 sm:flex-row">
           <p>
-            © {new Date().getFullYear()} {APP_NAME}. Built in Diredawa, Ethiopia.
+            © {new Date().getFullYear()} {APP_NAME}. Built in Dire Dawa,
+            Ethiopia.
           </p>
           <p>All prices are quoted in Ethiopian Birr (ETB).</p>
         </div>

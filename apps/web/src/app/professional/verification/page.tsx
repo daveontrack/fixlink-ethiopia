@@ -32,7 +32,7 @@ export default async function ProfessionalVerificationPage() {
     <div className="space-y-8">
       <PageHeader
         title="Verification"
-        description="Submit identity and licence documents. Our team reviews them within two working days."
+        description="Submit identity and licence documents, then track their review status here."
         actions={
           <StatusBadge
             status={status}

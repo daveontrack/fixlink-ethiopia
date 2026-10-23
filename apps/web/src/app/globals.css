@@ -4,7 +4,16 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --radius: 0.65rem;
+  --radius: 0.75rem;
+
+  /* Shared fallbacks: role shells override these with their own palette. */
+  --role-accent: #14b8a6;
+  --role-accent-light: #99f6e4;
+  --role-soft: #ccfbf1;
+  --role-ink: #0f766e;
+  --role-gradient: linear-gradient(135deg, #115e59 0%, #0f766e 50%, #14b8a6 100%);
+  --card-shadow: 0 1px 3px rgb(15 23 42 / 4%), 0 8px 24px -8px rgb(15 23 42 / 8%);
+  --card-shadow-lg: 0 4px 6px -1px rgb(15 23 42 / 5%), 0 20px 40px -12px rgb(15 23 42 / 12%);
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -12,8 +21,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.55 0.16 152);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: #0f766e;
+  --primary-foreground: #ffffff;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -24,9 +33,9 @@
   --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.55 0.16 152);
+  --ring: #14b8a6;
 
-  --chart-1: oklch(0.55 0.16 152);
+  --chart-1: #0f766e;
   --chart-2: oklch(0.65 0.13 200);
   --chart-3: oklch(0.72 0.15 80);
   --chart-4: oklch(0.63 0.19 25);
@@ -34,12 +43,12 @@
 
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.55 0.16 152);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: #0f766e;
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.55 0.16 152);
+  --sidebar-ring: #14b8a6;
 }
 
 .dark {
@@ -77,6 +86,136 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.7 0.15 152);
+}
+
+/* ------------------------------------------------------------------ */
+/* Role themes                                                         */
+/* ------------------------------------------------------------------ */
+/* Each dashboard scopes the shared tokens to its own palette. Existing   */
+/* shadcn primitives (Card, Button, Badge, inputs) pick the values up      */
+/* automatically, so there is one design system with three identities.    */
+
+[data-role="customer"] {
+  --background: #f0fdfa;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #0f766e;
+  --primary-foreground: #ffffff;
+  --secondary: #ccfbf1;
+  --secondary-foreground: #115e59;
+  --muted: #e7fbf7;
+  --muted-foreground: #475569;
+  --accent: #ccfbf1;
+  --accent-foreground: #115e59;
+  --border: #cdeee7;
+  --input: #a7e8de;
+  --ring: #14b8a6;
+
+  --chart-1: #0f766e;
+  --chart-2: #14b8a6;
+  --chart-3: #0d9488;
+  --chart-4: #2dd4bf;
+  --chart-5: #115e59;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #0f766e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f0fdfa;
+  --sidebar-accent-foreground: #0f766e;
+  --sidebar-border: #d9f3ee;
+  --sidebar-ring: #14b8a6;
+
+  --role-accent: #14b8a6;
+  --role-accent-light: #99f6e4;
+  --role-soft: #ccfbf1;
+  --role-ink: #0f766e;
+  --role-gradient: linear-gradient(135deg, #115e59 0%, #0f766e 50%, #14b8a6 100%);
+}
+
+[data-role="professional"] {
+  --background: #eff6ff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --secondary: #dbeafe;
+  --secondary-foreground: #1e3a8a;
+  --muted: #e8f0fe;
+  --muted-foreground: #475569;
+  --accent: #dbeafe;
+  --accent-foreground: #1e40af;
+  --border: #d6e4ff;
+  --input: #bfdbfe;
+  --ring: #2563eb;
+
+  --chart-1: #1d4ed8;
+  --chart-2: #2563eb;
+  --chart-3: #3b82f6;
+  --chart-4: #60a5fa;
+  --chart-5: #1e3a8a;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #1d4ed8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eff6ff;
+  --sidebar-accent-foreground: #1d4ed8;
+  --sidebar-border: #dbe7ff;
+  --sidebar-ring: #2563eb;
+
+  --role-accent: #2563eb;
+  --role-accent-light: #93c5fd;
+  --role-soft: #dbeafe;
+  --role-ink: #1d4ed8;
+  --role-gradient: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #2563eb 100%);
+}
+
+[data-role="admin"] {
+  --background: #eef2ff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #111827;
+  --primary-foreground: #f9fafb;
+  --secondary: #e0e7ff;
+  --secondary-foreground: #312e81;
+  --muted: #e8edfb;
+  --muted-foreground: #4b5563;
+  --accent: #e0e7ff;
+  --accent-foreground: #3730a3;
+  --border: #dde3f5;
+  --input: #c7d2fe;
+  --ring: #6366f1;
+
+  --chart-1: #4f46e5;
+  --chart-2: #6366f1;
+  --chart-3: #111827;
+  --chart-4: #818cf8;
+  --chart-5: #312e81;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #111827;
+  --sidebar-primary-foreground: #f9fafb;
+  --sidebar-accent: #eef2ff;
+  --sidebar-accent-foreground: #312e81;
+  --sidebar-border: #e0e7ff;
+  --sidebar-ring: #6366f1;
+
+  --role-accent: #6366f1;
+  --role-accent-light: #a5b4fc;
+  --role-soft: #e0e7ff;
+  --role-ink: #4f46e5;
+  --role-gradient: linear-gradient(135deg, #111827 0%, #312e81 50%, #4f46e5 100%);
 }
 
 @theme inline {
@@ -126,12 +265,102 @@
     @apply border-border outline-ring/50;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv11", "ss01";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--role-soft);
+    color: var(--role-ink);
   }
 }
 
 @utility scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
+}
+
+/* The role canvas: a soft wash of the role colour behind white cards. */
+@utility role-canvas {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(
+      1100px 580px at 100% -16%,
+      color-mix(in srgb, var(--role-accent) 10%, transparent),
+      transparent 65%
+    ),
+    radial-gradient(
+      800px 400px at -6% 8%,
+      color-mix(in srgb, var(--role-accent) 6%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      600px 600px at 50% 100%,
+      color-mix(in srgb, var(--role-accent) 3%, transparent),
+      transparent 70%
+    );
+}
+
+@utility role-gradient {
+  background-image: var(--role-gradient);
+}
+
+@utility role-soft-panel {
+  background-color: var(--role-soft);
+  color: var(--role-ink);
+}
+
+@utility card-surface {
+  background-color: var(--card);
+  box-shadow: var(--card-shadow);
+}
+
+/* A restrained lift for interactive cards and rows. */
+@utility hover-lift {
+  transition:
+    transform 220ms cubic-bezier(0.21, 0.6, 0.35, 1),
+    box-shadow 220ms cubic-bezier(0.21, 0.6, 0.35, 1),
+    border-color 220ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 4px 8px -2px color-mix(in srgb, var(--role-accent) 12%, transparent),
+      0 16px 36px -12px color-mix(in srgb, var(--role-accent) 18%, transparent);
+  }
+}
+
+/* Subtle glow behind role-accent elements */
+@utility role-glow {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--role-accent) 10%, transparent),
+    0 8px 24px -6px color-mix(in srgb, var(--role-accent) 20%, transparent);
+}
+
+/* Glassmorphism panel */
+@utility glass-panel {
+  background: color-mix(in srgb, var(--card) 80%, transparent);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hover-lift {
+    transition: none;
+  }
+
+  .hover-lift:hover {
+    transform: none;
+  }
 }

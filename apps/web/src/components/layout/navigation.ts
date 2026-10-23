@@ -14,7 +14,6 @@ import {
   MessageSquare,
   MessageSquareMore,
   Scale,
-  Scissors,
   Search,
   Settings,
   ShieldCheck,
@@ -32,6 +31,17 @@ export interface NavItem {
   icon: LucideIcon;
   description?: string;
   badge?: string;
+  activeOn?: string[];
+}
+
+export function isNavItemActive(pathname: string, item: NavItem) {
+  return (
+    pathname === item.href ||
+    pathname.startsWith(`${item.href}/`) ||
+    item.activeOn?.some(
+      (path) => pathname === path || pathname.startsWith(`${path}/`),
+    ) === true
+  );
 }
 
 export const PUBLIC_NAV: NavItem[] = [
@@ -76,23 +86,26 @@ export const CUSTOMER_NAV = [...CUSTOMER_PRIMARY_NAV, ...CUSTOMER_MORE_NAV];
 
 export const PROFESSIONAL_NAV: NavItem[] = [
   { title: "Dashboard", href: "/professional/dashboard", icon: LayoutDashboard },
-  { title: "Requests", href: "/professional/requests", icon: ClipboardList },
+  { title: "Incoming Requests", href: "/professional/requests", icon: ClipboardList },
   { title: "Quotations", href: "/professional/quotations", icon: FileText },
-  { title: "Bookings", href: "/professional/bookings", icon: CalendarDays },
-  { title: "Services", href: "/professional/services", icon: Wrench },
-  { title: "Availability", href: "/professional/availability", icon: CalendarDays },
+  { title: "Bookings & Active Jobs", href: "/professional/bookings", icon: CalendarDays },
+  { title: "Availability & Schedule", href: "/professional/availability", icon: CalendarDays },
+  {
+    title: "Profile & Services",
+    href: "/professional/profile",
+    icon: Wrench,
+    activeOn: ["/professional/services"],
+  },
   {
     title: "Verification",
     href: "/professional/verification",
     icon: BadgeCheck,
-    badge: "Required",
   },
   { title: "Messages", href: "/professional/messages", icon: MessageSquare },
-  { title: "Notifications", href: "/professional/notifications", icon: BadgeCheck },
-  { title: "Completed Jobs", href: "/professional/history", icon: History },
-  { title: "Reviews", href: "/professional/reviews", icon: Star },
-  { title: "Report a Problem", href: "/professional/report", icon: AlertTriangle },
-  { title: "Profile", href: "/professional/profile", icon: Settings },
+  { title: "Notifications", href: "/professional/notifications", icon: Bell },
+  { title: "Completed Jobs & Reviews", href: "/professional/reviews", icon: Star },
+  { title: "Earnings Summary", href: "/professional/earnings", icon: Scale },
+  { title: "Settings", href: "/professional/settings", icon: Settings },
 ];
 
 export const ADMIN_NAV: NavItem[] = [

@@ -43,7 +43,6 @@ export function ProfileForm({ defaultValues }: ProfileFormProps) {
     } else {
       toast.success("Profile updated.");
       router.refresh();
-      router.push("/customer/dashboard");
     }
   }
 

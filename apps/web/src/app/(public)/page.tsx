@@ -73,60 +73,83 @@ export default async function HomePage() {
   const professionals = await listProfessionals({ pageSize: 3 });
 
   return (
-    <div className="space-y-20">
-      <section className="border-b border-border bg-gradient-to-b from-primary/5 to-background">
-        <div className="container mx-auto grid gap-12 px-4 py-16 lg:grid-cols-2 lg:py-24">
+    <div className="space-y-20 bg-[#f8fefc]">
+      <section className="relative overflow-hidden border-b border-teal-100/80">
+        <div
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(900px_500px_at_85%_-10%,#ccfbf1,transparent_65%),radial-gradient(700px_360px_at_5%_0%,#e0f2fe,transparent_60%)]"
+          aria-hidden
+        />
+        <div className="container relative mx-auto grid items-center gap-14 px-4 py-16 lg:grid-cols-2 lg:py-24">
           <div className="space-y-6">
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+            <span className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-white/80 px-3.5 py-1.5 text-xs font-semibold text-teal-800 shadow-sm backdrop-blur">
               <Sparkles className="size-3.5" aria-hidden />
-              Now serving Diredawa, Ethiopia
+              Now serving Dire Dawa, Ethiopia
             </span>
-            <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-              Book trusted home services in Diredawa
+            <h1 className="text-4xl font-semibold leading-[1.05] tracking-tight text-slate-900 sm:text-5xl xl:text-6xl">
+              Book{" "}
+              <span className="bg-gradient-to-r from-teal-700 to-emerald-500 bg-clip-text text-transparent">
+                trusted home services
+              </span>{" "}
+              in Dire Dawa
             </h1>
-            <p className="max-w-lg text-lg text-muted-foreground">
-              Post a request, receive quotations from verified local professionals and book the job — with clear prices and ratings you can trust.
+            <p className="max-w-lg text-lg leading-relaxed text-slate-600">
+              Post a request, receive quotations from verified local
+              professionals and book the job — with clear prices in Ethiopian
+              Birr and ratings you can trust.
             </p>
             <div className="flex flex-wrap gap-3">
-              <SignInButton mode="modal" fallbackRedirectUrl="/sign-in">
-                <Button asChild size="lg" variant="secondary">
-                  Sign in
-                </Button>
-              </SignInButton>
               <SignUpButton mode="modal" fallbackRedirectUrl="/sign-up/customer">
-                <Button asChild size="lg" variant="outline">
+                <Button size="lg">
                   Get Started
                 </Button>
               </SignUpButton>
+              <SignInButton mode="modal" fallbackRedirectUrl="/sign-in">
+                <Button size="lg" variant="outline">
+                  Sign in
+                </Button>
+              </SignInButton>
             </div>
-            <dl className="grid max-w-lg grid-cols-3 gap-6 pt-4">
+            <dl className="grid max-w-lg grid-cols-3 gap-6 border-t border-teal-100 pt-6">
               {[
                 { label: "Service categories", value: SERVICE_CATEGORIES.length },
                 { label: "Verified pros", value: "120+" },
                 { label: "Average rating", value: "4.8" },
               ].map((stat) => (
                 <div key={stat.label}>
-                  <dt className="text-xs uppercase tracking-wide text-muted-foreground">
+                  <dt className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
                     {stat.label}
                   </dt>
-                  <dd className="text-2xl font-semibold">{stat.value}</dd>
+                  <dd className="mt-1 text-2xl font-semibold tracking-tight text-slate-900">
+                    {stat.value}
+                  </dd>
                 </div>
               ))}
             </dl>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {SERVICE_CATEGORIES.slice(0, 6).map((category) => (
+            {SERVICE_CATEGORIES.slice(0, 6).map((category, index) => (
               <Link
                 key={category.value}
                 href={`/services/${category.value}`}
-                className="group rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40 hover:bg-accent/40"
+                className="group relative overflow-hidden rounded-2xl border border-teal-100 bg-white/90 p-5 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-teal-300 hover:shadow-xl hover:shadow-teal-900/5"
               >
-                <span className="grid size-10 place-items-center rounded-lg bg-primary/10 text-primary">
-                  <Wrench className="size-5" aria-hidden />
-                </span>
-                <p className="mt-3 font-medium">{category.label}</p>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <span
+                  className="pointer-events-none absolute -right-6 -top-6 size-20 rounded-full bg-teal-50 transition-transform duration-300 group-hover:scale-125"
+                  aria-hidden
+                />
+                <div className="relative flex items-center justify-between">
+                  <span className="grid size-10 place-items-center rounded-xl bg-teal-50 text-teal-700 ring-1 ring-inset ring-teal-100 transition-colors group-hover:bg-teal-600 group-hover:text-white">
+                    <Wrench className="size-5" aria-hidden />
+                  </span>
+                  <span className="text-[11px] font-semibold tabular-nums text-teal-700/50">
+                    0{index + 1}
+                  </span>
+                </div>
+                <p className="relative mt-3 font-semibold tracking-tight text-slate-900">
+                  {category.label}
+                </p>
+                <p className="relative mt-1 text-sm text-slate-500">
                   Get matched with a verified professional
                 </p>
               </Link>
@@ -178,7 +201,7 @@ export default async function HomePage() {
         </ol>
       </section>
 
-      <section className="border-y border-border bg-muted/30 py-16">
+      <section className="border-y border-teal-100 bg-white/70 py-16">
         <div className="container mx-auto px-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -258,24 +281,39 @@ export default async function HomePage() {
       </section>
 
       <section className="container mx-auto px-4 pb-8">
-        <div className="rounded-2xl bg-primary px-6 py-12 text-center text-primary-foreground">
-          <h2 className="text-3xl font-semibold tracking-tight">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-900 via-teal-800 to-emerald-700 px-6 py-14 text-center text-white shadow-2xl shadow-teal-900/20">
+          <span
+            className="pointer-events-none absolute -left-16 -top-16 size-64 rounded-full bg-white/10 blur-3xl"
+            aria-hidden
+          />
+          <span
+            className="pointer-events-none absolute -bottom-24 right-0 size-72 rounded-full bg-emerald-400/20 blur-3xl"
+            aria-hidden
+          />
+          <h2 className="relative text-3xl font-semibold tracking-tight sm:text-4xl">
             Ready to get it done?
           </h2>
-          <p className="mx-auto mt-2 max-w-xl text-primary-foreground/80">
+          <p className="relative mx-auto mt-3 max-w-xl text-teal-50/90">
             Create an account and choose your role — it is free for customers.
           </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <SignInButton mode="modal" fallbackRedirectUrl="/sign-in">
-              <Button asChild size="lg" variant="secondary">
-                Sign in
-              </Button>
-            </SignInButton>
+          <div className="relative mt-7 flex flex-wrap justify-center gap-3">
             <SignUpButton mode="modal" fallbackRedirectUrl="/sign-up/customer">
-              <Button asChild size="lg" variant="outline">
+              <Button
+                size="lg"
+                className="bg-white text-teal-900 hover:bg-teal-50"
+              >
                 Get Started
               </Button>
             </SignUpButton>
+            <SignInButton mode="modal" fallbackRedirectUrl="/sign-in">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+              >
+                Sign in
+              </Button>
+            </SignInButton>
           </div>
         </div>
       </section>

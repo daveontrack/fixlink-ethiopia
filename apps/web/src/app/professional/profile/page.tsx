@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProfileForm } from "@/features/profile/components/profile-form";
 import { ServiceAreaForm } from "@/features/professional/components/service-area-form";
@@ -28,8 +30,13 @@ export default async function ProfessionalProfilePage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Profile"
-        description="Keep your public profile up to date so customers can find you."
+        title="Profile & Services"
+        description="Manage your contact details, service area, and the services customers can request."
+        actions={
+          <Button asChild variant="outline">
+            <Link href="/professional/services">Manage skills & services</Link>
+          </Button>
+        }
       />
 
       <div className="grid gap-6 lg:grid-cols-3">

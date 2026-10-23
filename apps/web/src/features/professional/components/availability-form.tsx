@@ -30,7 +30,7 @@ const DEFAULT_SLOTS: SlotState[] = DAYS.map((_, weekday) => ({
   weekday,
   startTime: "08:00",
   endTime: "18:00",
-  isActive: weekday >= 1 && weekday <= 5,
+  isActive: false,
 }));
 
 export function AvailabilityForm({
@@ -77,6 +77,7 @@ export function AvailabilityForm({
           >
             <Switch
               checked={slot.isActive}
+              aria-label={`Available on ${DAYS[slot.weekday]}`}
               onCheckedChange={(checked) =>
                 updateSlot(slot.weekday, { isActive: checked })
               }
@@ -85,6 +86,7 @@ export function AvailabilityForm({
             <div className="flex items-center gap-2">
               <input
                 type="time"
+                aria-label={`${DAYS[slot.weekday]} start time`}
                 className="rounded-md border border-input bg-background px-2 py-1 text-sm"
                 value={slot.startTime}
                 onChange={(event) =>
@@ -95,6 +97,7 @@ export function AvailabilityForm({
               <span className="text-muted-foreground">to</span>
               <input
                 type="time"
+                aria-label={`${DAYS[slot.weekday]} end time`}
                 className="rounded-md border border-input bg-background px-2 py-1 text-sm"
                 value={slot.endTime}
                 onChange={(event) =>

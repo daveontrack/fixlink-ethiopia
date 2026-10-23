@@ -35,14 +35,14 @@ export default async function CustomerBookingsPage({
       />
 
       <div className="flex flex-wrap gap-2">
-        <Button asChild variant={status ? "outline" : "secondary"} size="sm">
+        <Button asChild variant={status ? "outline" : "default"} size="sm">
           <Link href="/customer/bookings">All</Link>
         </Button>
         {Object.entries(BOOKING_STATUS_LABEL).map(([value, label]) => (
           <Button
             key={value}
             asChild
-            variant={status === value ? "secondary" : "outline"}
+            variant={status === value ? "default" : "outline"}
             size="sm"
           >
             <Link href={`/customer/bookings?status=${value}`}>{label}</Link>

@@ -44,6 +44,7 @@ function toProfessional(row: ProfessionalLocationRow): ProfessionalProfile {
     phone: null,
     email: "",
     avatarUrl: row.avatar_url,
+    preferredLanguage: "en",
     city: row.base_area_name,
     subCity: row.sub_city_code,
     address: row.base_area_name,

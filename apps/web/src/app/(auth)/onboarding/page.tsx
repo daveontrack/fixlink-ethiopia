@@ -1,26 +1,25 @@
-import type { Metadata } from "next";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { getCurrentUser } from "@/lib/auth/session";
-import { ROLE_HOME } from "@/lib/constants";
+import { getPostAuthRedirect } from "@/lib/auth/redirects";
 import { OnboardingForm } from "@/features/onboarding/onboarding-form";
 
-export const metadata: Metadata = {
-  title: "Get started",
-};
-
 export default async function OnboardingPage() {
+  const { userId } = await auth();
+  if (!userId) redirect("/sign-in");
+
   const user = await getCurrentUser();
 
-  if (!user) redirect("/sign-in");
-  if (user.profileId) redirect(ROLE_HOME[user.role]);
+  // The stored profile role wins. Missing profiles proceed through onboarding.
+  if (user?.profileId) redirect(getPostAuthRedirect(user.role));
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="How will you use FIXLINK?"
-        description="This decides which dashboard and tools you get. You can contact us later if you want to switch."
+        description="This decides which dashboard and tools you get."
       />
       <OnboardingForm />
     </div>

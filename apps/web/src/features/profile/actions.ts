@@ -3,22 +3,18 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { requireCustomer } from "@/lib/auth/guards";
-import { createClient } from "@/lib/supabase/server";
+import { requireRole } from "@/lib/auth/guards";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const profileSchema = z.object({
   fullName: z.string().min(2, "Please enter your name").max(120),
-  phone: z
-    .string()
-    .max(20)
-    .optional()
-    .or(z.literal("")),
+  phone: z.string().max(20).optional().or(z.literal("")),
 });
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export async function updateProfile(values: ProfileFormValues) {
-  const user = await requireCustomer();
+  const user = await requireRole("customer", "professional");
   const parsed = profileSchema.safeParse(values);
 
   if (!parsed.success) {
@@ -29,13 +25,7 @@ export async function updateProfile(values: ProfileFormValues) {
     };
   }
 
-  const supabase = await createClient();
-
-  // Use the admin client (service role) for the profile update so it works
-  // regardless of the Clerk JWT bridge state. Only safe columns are updated.
-  const { createAdminClient } = await import("@/lib/supabase/admin");
-  const admin = createAdminClient() as any;
-
+  const admin = createAdminClient();
   const { data, error } = await admin
     .from("profiles")
     .update({
@@ -44,35 +34,25 @@ export async function updateProfile(values: ProfileFormValues) {
       updated_at: new Date().toISOString(),
     })
     .eq("clerk_user_id", user.clerkUserId)
-    .select();
+    .select("id")
+    .maybeSingle();
 
   if (error) {
-    console.error("[profile] update failed:", error.message, error.details, error.hint);
-    return { ok: false as const, error: `We could not save your profile: ${error.message}` };
+    console.error("[profile] update failed:", error.message);
+    return { ok: false as const, error: "We could not save your profile." };
   }
 
-  if (!data || data.length === 0) {
-    // Profile doesn't exist yet — create it.
-    const { error: insertError } = await admin.from("profiles").insert({
-      clerk_user_id: user.clerkUserId,
-      full_name: parsed.data.fullName,
-      phone: parsed.data.phone || null,
-      role: "customer",
-      account_status: "active",
-    });
-
-    if (insertError) {
-      console.error("[profile] insert failed:", insertError.message);
-      return {
-        ok: false as const,
-        error: `We could not save your profile: ${insertError.message}`,
-      };
-    }
+  if (!data) {
+    return {
+      ok: false as const,
+      error: "Your profile could not be found. Refresh and try again.",
+    };
   }
 
-  revalidatePath("/customer/profile");
-  revalidatePath("/customer/dashboard");
-  revalidatePath("/customer", "layout");
+  const basePath = `/${user.role}`;
+  revalidatePath(`${basePath}/profile`);
+  revalidatePath(`${basePath}/dashboard`);
+  revalidatePath(basePath, "layout");
 
   return { ok: true as const };
 }

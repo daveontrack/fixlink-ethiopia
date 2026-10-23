@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { EmptyState } from "@/components/shared/empty-state";
 import { PageHeader } from "@/components/shared/page-header";
+import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ServiceToggle } from "@/features/professional/components/service-toggle";
@@ -32,8 +34,13 @@ export default async function ProfessionalServicesPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="My services"
+        title="Skills & Services"
         description="Define the services you offer and your base prices."
+        actions={
+          <Button asChild variant="outline">
+            <Link href="/professional/profile">Profile & service area</Link>
+          </Button>
+        }
       />
 
       <div className="grid gap-6 lg:grid-cols-2">

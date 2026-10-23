@@ -159,27 +159,14 @@ export async function listMatchedRequests(
   const page = filters.page ?? 1;
   const pageSize = filters.pageSize ?? PAGE_SIZE;
 
-  // First get the job_ids that are matched to this professional
-  const { data: matchedRows, error: matchError } = await supabase
-    .from("job_matches")
-    .select("job_id")
-    .eq("professional_id", professionalId)
-    .limit(pageSize);
-
-  if (matchError) {
-    console.warn("[requests] matched list failed:", matchError.message);
-    return { data: [], page, pageSize, total: 0, totalPages: 0 };
-  }
-
-  const matchedJobIds = (matchedRows ?? []).map(
-    (match: { job_id: string }) => match.job_id,
-  );
-
-  // Then fetch the actual job requests with status filter
+  // Use the real job_matches -> job_requests relationship so pagination and
+  // the exact count both cover the complete set of this professional's jobs.
   let query = supabase
     .from("job_requests")
-    .select(REQUEST_SELECT, { count: "exact" })
-    .in("id", matchedJobIds)
+    .select(`${REQUEST_SELECT}, job_matches!inner(professional_id)`, {
+      count: "exact",
+    })
+    .eq("job_matches.professional_id", professionalId)
     .in("status", ["open", "matching", "quoted"])
     .order("created_at", { ascending: false })
     .range((page - 1) * pageSize, page * pageSize - 1);

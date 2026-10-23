@@ -2,14 +2,16 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { CurrentUser, UserRole } from "@/types";
 
-const { redirectMock, getCurrentUserMock } = vi.hoisted(() => ({
+const { redirectMock, getCurrentUserMock, authMock } = vi.hoisted(() => ({
   redirectMock: vi.fn((url: string) => {
     throw new Error(`REDIRECT:${url}`);
   }),
   getCurrentUserMock: vi.fn(),
+  authMock: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({ redirect: redirectMock }));
+vi.mock("@clerk/nextjs/server", () => ({ auth: authMock }));
 vi.mock("@/lib/auth/session", () => ({ getCurrentUser: getCurrentUserMock }));
 
 import {
@@ -38,9 +40,11 @@ async function expectRedirect(promise: Promise<unknown>, target: string) {
 describe("Authentication guards", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    authMock.mockResolvedValue({ userId: "user_test" });
   });
 
   it("sends a signed-out visitor to sign-in", async () => {
+    authMock.mockResolvedValue({ userId: null });
     getCurrentUserMock.mockResolvedValue(null);
 
     await expectRedirect(requireUser(), "/sign-in");
@@ -51,6 +55,12 @@ describe("Authentication guards", () => {
     getCurrentUserMock.mockResolvedValue(user("customer"));
 
     await expect(requireUser()).resolves.toMatchObject({ role: "customer" });
+  });
+
+  it("sends an authenticated user without a profile to onboarding", async () => {
+    getCurrentUserMock.mockResolvedValue(null);
+
+    await expectRedirect(requireUser(), "/onboarding");
   });
 
   it("redirects a customer away from requireAdmin", async () => {
@@ -74,6 +84,14 @@ describe("Authentication guards", () => {
     getCurrentUserMock.mockResolvedValue(user("customer"));
     await expectRedirect(requireProfessional(), "/customer/dashboard");
   });
+
+  it.each(["customer", "professional", "admin"] as const)(
+    "allows direct access to a %s dashboard when the stored role matches",
+    async (role) => {
+      getCurrentUserMock.mockResolvedValue(user(role));
+      await expect(requireRole(role)).resolves.toMatchObject({ role });
+    },
+  );
 
   it("requireRole accepts any of the listed roles", async () => {
     getCurrentUserMock.mockResolvedValue(user("professional"));

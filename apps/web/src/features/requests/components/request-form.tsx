@@ -112,7 +112,7 @@ export function RequestForm({
 
   if (categories.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+      <div className="role-soft-panel rounded-2xl border border-dashed border-[var(--role-accent)]/30 p-8 text-center text-sm">
         Service categories are still being configured. Please check back shortly
         or contact support.
       </div>
@@ -163,12 +163,12 @@ export function RequestForm({
         {subCitiesError ? (
           <div
             role="alert"
-            className="rounded-lg border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive"
+            className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive"
           >
             {subCitiesError} Refresh the page to try again, or contact support.
           </div>
         ) : subCities.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
+          <div className="rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
             No service areas are available yet. Please check back shortly or
             contact support.
           </div>
@@ -182,8 +182,10 @@ export function RequestForm({
           />
         )}
 
-        <div className="rounded-lg border border-border bg-background p-4">
-          <h3 className="mb-1 font-medium">Request photos (optional)</h3>
+        <div className="rounded-xl border border-border/80 bg-card p-5 shadow-sm">
+          <h3 className="mb-1 text-sm font-semibold tracking-tight">
+            Request photos (optional)
+          </h3>
           <p className="mb-3 text-sm text-muted-foreground">
             Up to {MAX_PHOTOS} photos, 5 MB each. JPG, PNG or WebP.
           </p>
@@ -193,13 +195,13 @@ export function RequestForm({
               {photos.map((photo, index) => (
                 <div
                   key={photo.previewUrl}
-                  className="flex flex-col items-center rounded border border-border p-2"
+                  className="flex flex-col items-center rounded-lg border border-border bg-muted/30 p-2"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={photo.previewUrl}
                     alt={photo.file.name}
-                    className="mb-2 h-24 w-full rounded object-cover"
+                    className="mb-2 h-24 w-full rounded-md object-cover"
                   />
                   <p className="w-full truncate text-xs text-muted-foreground">
                     {photo.file.name}
