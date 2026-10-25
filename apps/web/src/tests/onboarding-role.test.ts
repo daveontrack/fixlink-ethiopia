@@ -94,6 +94,52 @@ describe("onboarding role persistence", () => {
     expect(state.createClerkClient).toHaveBeenCalledOnce();
   });
 
+  it("creates the profile when the database has no legacy identity or e-mail column", async () => {
+    const lookup = profileQuery({ data: null, error: null });
+    const legacyLookup = profileQuery({
+      data: null,
+      error: {
+        code: "42703",
+        message: "column profiles.auth_user_id does not exist",
+      },
+    });
+    const insertWithEmail = profileQuery({
+      data: null,
+      error: {
+        code: "PGRST204",
+        message:
+          "Could not find the 'email' column of 'profiles' in the schema cache",
+      },
+    });
+    const insertWithoutEmail = profileQuery({
+      data: { id: "p3", role: "customer" },
+      error: null,
+    });
+    const database = {
+      from: vi
+        .fn()
+        .mockReturnValueOnce(lookup)
+        .mockReturnValueOnce(legacyLookup)
+        .mockReturnValueOnce(insertWithEmail)
+        .mockReturnValueOnce(insertWithoutEmail),
+    };
+    state.createAdminClient.mockReturnValue(database);
+
+    await expect(
+      completeOnboarding({ role: "customer" }),
+    ).rejects.toThrow("REDIRECT:/customer/dashboard");
+
+    expect(insertWithoutEmail.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        clerk_user_id: "user_new",
+        role: "customer",
+      }),
+    );
+    expect(insertWithoutEmail.insert).toHaveBeenCalledWith(
+      expect.not.objectContaining({ email: expect.anything() }),
+    );
+  });
+
   it("rejects attempts to assign admin through onboarding", async () => {
     await expect(
       completeOnboarding({ role: "admin" } as never),

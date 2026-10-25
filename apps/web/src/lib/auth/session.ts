@@ -3,6 +3,7 @@ import "server-only";
 import { auth } from "@clerk/nextjs/server";
 
 import { createClerkClient } from "@/lib/supabase/clerk";
+import { isMissingColumnError } from "@/lib/supabase/errors";
 import type { Database } from "@/lib/supabase/database.types";
 import type { CurrentUser, Profile, UserRole } from "@/types";
 
@@ -43,24 +44,43 @@ function toProfile(row: ProfileRow): Profile {
   };
 }
 
+const PROFILE_COLUMNS =
+  "id, clerk_user_id, email, full_name, role, phone, avatar_url, preferred_language, account_status, created_at, updated_at";
+
+// The e-mail copy column is absent from deployments created before the
+// profiles migration that introduced it; the address is still in Clerk there.
+const PROFILE_COLUMNS_WITHOUT_EMAIL =
+  "id, clerk_user_id, full_name, role, phone, avatar_url, preferred_language, account_status, created_at, updated_at";
+
 /** Read the signed-in user's persisted profile through Clerk JWT + Supabase RLS. */
 async function loadProfile(userId: string): Promise<ProfileRow | null> {
   const supabase = await createClerkClient();
   const { data, error } = await supabase
     .from("profiles")
-    .select(
-      "id, clerk_user_id, email, full_name, role, phone, avatar_url, preferred_language, account_status, created_at, updated_at",
-    )
+    .select(PROFILE_COLUMNS)
     .eq("clerk_user_id", userId)
     .maybeSingle();
 
-  if (error) {
-    // Common cause: Supabase has not been configured to trust Clerk JWTs.
-    console.warn("[auth] profile load failed:", error.message);
-    return null;
+  if (!error) return data;
+
+  if (isMissingColumnError(error, "email")) {
+    const fallback = await supabase
+      .from("profiles")
+      .select(PROFILE_COLUMNS_WITHOUT_EMAIL)
+      .eq("clerk_user_id", userId)
+      .maybeSingle();
+
+    if (fallback.error) {
+      console.warn("[auth] profile load failed:", fallback.error.message);
+      return null;
+    }
+
+    return fallback.data ? { ...fallback.data, email: null } : null;
   }
 
-  return data;
+  // Common cause: Supabase has not been configured to trust Clerk JWTs.
+  console.warn("[auth] profile load failed:", error.message);
+  return null;
 }
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {

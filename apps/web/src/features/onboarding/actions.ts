@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClerkClient } from "@/lib/supabase/clerk";
+import { isMissingColumnError } from "@/lib/supabase/errors";
 import { getPostAuthRedirect } from "@/lib/auth/redirects";
 
 const onboardingSchema = z.object({
@@ -20,7 +21,17 @@ async function ensureProfessionalProfile() {
   if (error) throw new Error(error.message);
 }
 
-async function getStoredProfile(userId: string) {
+type StoredProfile = {
+  id: string;
+  role: "customer" | "professional" | "admin";
+};
+
+type ProfileLookup = {
+  data: StoredProfile | null;
+  error: { message: string } | null;
+};
+
+async function getStoredProfile(userId: string): Promise<ProfileLookup> {
   const database = createAdminClient();
   const currentProfile = await database
     .from("profiles")
@@ -28,8 +39,12 @@ async function getStoredProfile(userId: string) {
     .eq("clerk_user_id", userId)
     .maybeSingle();
 
-  if (currentProfile.error) return currentProfile;
-  if (currentProfile.data) return currentProfile;
+  if (currentProfile.error) {
+    return { data: null, error: currentProfile.error };
+  }
+  if (currentProfile.data) {
+    return { data: currentProfile.data, error: null };
+  }
 
   // Older Clerk installations kept the external id in auth_user_id. Adopt
   // that row in place so its stored role and marketplace history are retained.
@@ -39,15 +54,64 @@ async function getStoredProfile(userId: string) {
     .eq("auth_user_id", userId)
     .maybeSingle();
 
-  if (legacyProfile.error || !legacyProfile.data) return legacyProfile;
+  // A database created after the switch to Clerk has no auth_user_id column:
+  // that means "no legacy profile", not a failure to load the account.
+  if (legacyProfile.error && isMissingColumnError(legacyProfile.error, "auth_user_id")) {
+    return { data: null, error: null };
+  }
+  if (legacyProfile.error) {
+    return { data: null, error: legacyProfile.error };
+  }
+  if (!legacyProfile.data) return { data: null, error: null };
 
-  return database
+  const adopted = await database
     .from("profiles")
     .update({ clerk_user_id: userId })
     .eq("id", legacyProfile.data.id)
     .is("clerk_user_id", null)
     .select("id, role")
     .maybeSingle();
+
+  return adopted.error
+    ? { data: null, error: adopted.error }
+    : { data: adopted.data, error: null };
+}
+
+async function insertProfile(
+  database: ReturnType<typeof createAdminClient>,
+  values: {
+    clerk_user_id: string;
+    email: string | null;
+    full_name: string;
+    phone: string | null;
+    avatar_url: string | null;
+    role: "customer" | "professional";
+  },
+) {
+  const created = await database
+    .from("profiles")
+    .insert(values)
+    .select("id, role")
+    .single();
+
+  if (!created.error || !isMissingColumnError(created.error, "email")) {
+    return created;
+  }
+
+  // Older deployments do not carry the e-mail copy column (the address lives
+  // in Clerk there). Store the profile without it rather than failing
+  // onboarding for every new account.
+  console.warn(
+    "[onboarding] profiles.email is missing from the database; storing the profile without it.",
+  );
+  const { email, ...withoutEmail } = values;
+  void email;
+
+  return database
+    .from("profiles")
+    .insert(withoutEmail)
+    .select("id, role")
+    .single();
 }
 
 async function finishExistingProfile(role: "customer" | "professional" | "admin") {
@@ -94,18 +158,14 @@ export async function completeOnboarding(values: OnboardingValues) {
     "FixLink user";
 
   const database = createAdminClient();
-  const { data: created, error: createError } = await database
-    .from("profiles")
-    .insert({
-      clerk_user_id: userId,
-      email: clerkUser?.primaryEmailAddress?.emailAddress ?? null,
-      full_name: fullName,
-      phone: clerkUser?.primaryPhoneNumber?.phoneNumber ?? null,
-      avatar_url: clerkUser?.imageUrl ?? null,
-      role: parsed.data.role,
-    })
-    .select("id, role")
-    .single();
+  const { data: created, error: createError } = await insertProfile(database, {
+    clerk_user_id: userId,
+    email: clerkUser?.primaryEmailAddress?.emailAddress ?? null,
+    full_name: fullName,
+    phone: clerkUser?.primaryPhoneNumber?.phoneNumber ?? null,
+    avatar_url: clerkUser?.imageUrl ?? null,
+    role: parsed.data.role,
+  });
 
   if (createError) {
     // Concurrent Clerk callbacks may create the same profile. Re-read and
