@@ -68,32 +68,7 @@ Run from the repository root; npm workspaces install `apps/web` as well.
 npm ci
 ```
 
-### 2. Environment variables
 
-The app reads `.env` files from `apps/web/` (Next.js convention). Create
-`apps/web/.env.local` with the values below. Database scripts run from the
-repository root and load a root `.env`, so keep the Supabase values there too.
-
-| Variable | Visibility | Used for |
-|---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | public | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | public | anon/publishable key (RLS-bound) |
-| `SUPABASE_SERVICE_ROLE_KEY` | **server only** | admin client, uploads, signed URLs |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | public | Clerk frontend |
-| `CLERK_SECRET_KEY` | **server only** | Clerk backend and webhook verification |
-| `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | public | `/sign-in` |
-| `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | public | `/sign-up` |
-| `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL` | public | `/customer/dashboard` |
-| `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL` | public | `/onboarding` |
-| `NEXT_PUBLIC_APP_URL` | public | canonical app URL (`http://localhost:3000` locally) |
-| `NEXT_PUBLIC_MAP_TILE_URL` | public | optional map tiles |
-| `SUPABASE_ACCESS_TOKEN` | developer only | Management API/scripts; needs `database:write` for DDL |
-
-Rules:
-
-- Never prefix a secret with `NEXT_PUBLIC_`; it would ship to the browser.
-- Never commit `.env`, `.env.local` or a service-role key. They are ignored.
-- Rotate a key immediately if it appears in a log or a client bundle.
 
 ### 3. Configure Clerk
 
