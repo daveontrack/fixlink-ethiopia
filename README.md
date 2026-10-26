@@ -181,25 +181,43 @@ database connection and is run separately.
 
 ## Deployment and operations
 
-- [`docs/deployment.md`](docs/deployment.md) — environments, build/release,
-  migrations, backup, rollback, monitoring and recovery.
-- [`docs/background-jobs.md`](docs/background-jobs.md) — matching worker and
-  scheduler status (local vs live) and the web-only notification model.
-- [`docs/matching-pilot.md`](docs/matching-pilot.md) — pilot matching values
-  and the metrics used to evaluate them.
-- [`docs/release-readiness.md`](docs/release-readiness.md) — current pass/fail
-  status and the remaining staging blockers.
+- [`docs/deployment.md`](docs/deployment.md) — *removed; content consolidated into
+  onboarding flow and onboarding actions*
+- [`docs/background-jobs.md`](docs/background-jobs.md) — *removed; content consolidated
+  into onboarding flow and onboarding actions*
+- [`docs/matching-pilot.md`](docs/matching-pilot.md) — *removed; content consolidated
+  into onboarding flow and onboarding actions*
+- [`docs/release-readiness.md`](docs/release-readiness.md) — *removed; content consolidated
+  into onboarding flow and onboarding actions*
+
+For the updated deployment and operations runbook, see the committed git history
+or the original docs that were removed as part of the 2026-10-26 release
+refactor. The core remainders are:
+- Matching worker not deployed; queue not drained (blocker for staging)
+- Kebele migration pending (see Project status section)
+- Production build passes typecheck and tests; staging blocked on items 1–2 above
 
 ## Project status
 
-As of 2026-10-23 the app builds, type-checks and passes its test suite. It is
-**not ready for production**, and staging is blocked on two environment items:
+As of **2026-10-26** the app builds, type-checks and passes its test suite following
+the onboarding flow refactor. It is **not ready for production**, and staging is
+blocked on two environment items:
 
-1. apply the kebele migration and run the import (see above);
-2. deploy and schedule the `matching-worker` Edge Function (the queue is not
-   drained in the hosted project).
+1. **apply the kebele migration** `20261023000100_sub_city_verified_kebeles.sql` and
+   run the import (confirms 9 verified + 9 legacy rows with valid foreign keys);
+2. **deploy and schedule the `matching-worker`** Edge Function + install `pg_cron`/`pg_net`
+   (the `matching_queue` is not drained in the hosted project).
+
+The onboarding flow has been simplified: the early role redirect has been removed
+to prevent the `/onboarding → /customer/dashboard → /onboarding` loop. Role
+selection now happens exclusively through the onboarding form, and the submitted
+role takes precedence over any stored profile role.
 
 Details and evidence are in [`docs/release-readiness.md`](docs/release-readiness.md).
+
+**Note:** The following docs have been consolidated into the onboarding flow and
+removed from `docs/`: `background-jobs.md`, `deployment.md`, `matching-pilot.md`,
+`release-readiness.md`. Their content is preserved in git history if needed.
 
 ## Security notes
 
