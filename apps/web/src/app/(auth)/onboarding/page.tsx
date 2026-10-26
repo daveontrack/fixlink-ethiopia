@@ -2,7 +2,6 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 import { PageHeader } from "@/components/shared/page-header";
-import { getCurrentUser } from "@/lib/auth/session";
 import { getPostAuthRedirect } from "@/lib/auth/redirects";
 import { OnboardingForm } from "@/features/onboarding/onboarding-form";
 
@@ -10,10 +9,9 @@ export default async function OnboardingPage() {
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
-  const user = await getCurrentUser();
-
-  // The stored profile role wins. Missing profiles proceed through onboarding.
-  if (user?.profileId) redirect(getPostAuthRedirect(user.role));
+  // Do NOT redirect based on stored profile role here.
+  // The onboarding form will handle role selection and persist it via completeOnboarding.
+  // Redirecting early causes the loop: /onboarding → /customer/dashboard → /onboarding.
 
   return (
     <div className="space-y-6">

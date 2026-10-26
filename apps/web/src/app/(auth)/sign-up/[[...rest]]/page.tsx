@@ -85,6 +85,7 @@ export default function SignUpPage() {
           ← Back
         </Button>
         <SignUp
+          routing="hash"
           fallbackRedirectUrl={POST_AUTH_REDIRECT}
           forceRedirectUrl={POST_AUTH_REDIRECT}
         />

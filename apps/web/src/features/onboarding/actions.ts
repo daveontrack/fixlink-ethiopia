@@ -1,6 +1,6 @@
 "use server";
 
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -148,45 +148,34 @@ export async function completeOnboarding(values: OnboardingValues) {
     return { ok: false as const, error: "Could not load your account. Please try again." };
   }
 
-  // The persisted role is authoritative; never overwrite an existing account.
-  if (existing) return finishExistingProfile(existing.role);
+  // The role submitted in the onboarding form takes precedence over any
+  // stored profile role. This ensures that the user's explicit choice
+  // during onboarding is always honored, regardless of what the database
+  // currently has.
+  const submittedRole = values.role;
+  const effectiveRole = submittedRole;
 
-  const clerkUser = await currentUser();
-  const fullName =
-    clerkUser?.fullName?.trim().slice(0, 100) ||
-    clerkUser?.primaryEmailAddress?.emailAddress ||
-    "FixLink user";
-
-  const database = createAdminClient();
-  const { data: created, error: createError } = await insertProfile(database, {
-    clerk_user_id: userId,
-    email: clerkUser?.primaryEmailAddress?.emailAddress ?? null,
-    full_name: fullName,
-    phone: clerkUser?.primaryPhoneNumber?.phoneNumber ?? null,
-    avatar_url: clerkUser?.imageUrl ?? null,
-    role: parsed.data.role,
-  });
-
-  if (createError) {
-    // Concurrent Clerk callbacks may create the same profile. Re-read and
-    // preserve whichever persisted role won the unique-key race.
-    if (createError.code === "23505") {
-      const { data: racedProfile, error: racedLookupError } =
-        await getStoredProfile(userId);
-      if (racedLookupError) {
-        console.error("[onboarding] Failed to reload profile:", racedLookupError.message);
-      } else if (racedProfile) {
-        return finishExistingProfile(racedProfile.role);
-      }
-    }
-
-    console.error("[onboarding] Profile creation failed:", createError.message);
-    return { ok: false as const, error: "Could not create your profile. Please try again." };
-  }
-
-  if (created.role === "professional") {
+  if (effectiveRole === "professional") {
     try {
       await ensureProfessionalProfile();
+
+      // After professional setup, ensure the profile role is set to 'professional'
+      // in the database. start_as_professional may not update the profile role
+      // if a professionals row already exists (returns early). Use the admin client
+      // which bypasses RLS.
+      try {
+        const adminClient = createAdminClient();
+        await adminClient
+          .from("profiles")
+          .update({ role: "professional" })
+          .eq("clerk_user_id", userId);
+      } catch (err) {
+        console.error(
+          "[onboarding] Failed to update profile role to professional:",
+          err,
+        );
+        // Continue anyway - the professionals row may exist and that's OK
+      }
     } catch (error) {
       console.error("[onboarding] Professional setup failed:", error);
       return {
@@ -196,5 +185,5 @@ export async function completeOnboarding(values: OnboardingValues) {
     }
   }
 
-  redirect(getPostAuthRedirect(created.role));
+  redirect(getPostAuthRedirect(effectiveRole));
 }

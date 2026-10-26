@@ -9,6 +9,7 @@ export default function SignInPage() {
     <div className="flex min-h-[calc(100dvh-4rem)] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <SignIn
+          routing="hash"
           fallbackRedirectUrl={POST_AUTH_REDIRECT}
           forceRedirectUrl={POST_AUTH_REDIRECT}
         />
