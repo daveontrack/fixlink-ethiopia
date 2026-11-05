@@ -31,8 +31,6 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (keep example files committable)
-.env
-.env.*
 !.env.example
 !**/.env.example
 
@@ -48,3 +46,4 @@ next-env.d.ts
 /apps/web/node_modules/
 /apps/web/.freebuff/
 /apps/web/.git.bak/
+config.bat
