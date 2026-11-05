@@ -6,9 +6,9 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace @fixlink/web",
-    "build": "npm run build --workspace @fixlink/web",
-    "start": "npm run start --workspace @fixlink/web",
+    "dev": "node init && npm run dev --workspace @fixlink/web",
+    "build": "node init && npm run build --workspace @fixlink/web",
+    "start": "node init && npm run start --workspace @fixlink/web",
     "lint": "npm run lint --workspace @fixlink/web",
     "typecheck": "npm run typecheck --workspace @fixlink/web",
     "test": "npm run test --workspace @fixlink/web"
