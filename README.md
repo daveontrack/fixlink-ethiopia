@@ -204,9 +204,4 @@ removed from `docs/`: `background-jobs.md`, `deployment.md`, `matching-pilot.md`
 - The service-role key must only be imported by server-only modules
   (`src/lib/supabase/admin.ts`); never from a client component.
 - Report a suspected secret leak by rotating the key first, then reviewing the
-  audit log.
-
-## License
-
-No license file is included yet. Add one before distributing the project as
-open source.
+  audit lo
